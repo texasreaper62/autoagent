@@ -150,6 +150,32 @@ killall Docker && open -a Docker
 
 You can equip the agent with [Agent Skills for Context Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering) and [context7](https://github.com/upstash/context7) skills to improve performance.
 
+## Agent brain (meta-agent)
+
+The meta-agent (the one iterating on `agent.py` / `agent-claude.py`) uses the portable agentic-stack `.agent/` folder. Same brain for both SDKs.
+
+```
+.agent/
+├── AGENTS.md
+├── memory/                # personal + working + semantic + episodic
+├── skills/                # experiment-loop, harness-modify, failure-triage,
+│                          # tool-design, overfitting-check, sdk-portability, ...
+├── protocols/permissions.md    # enforces FIXED ADAPTER BOUNDARY + MODEL pin
+└── harness/hooks/
+
+.claude/
+├── agents/benchmark-runner.md      # fresh-context per benchmark iteration
+├── agents/failure-triage-agent.md  # reads 50 trajectories, returns grouping
+└── settings.json
+
+bin/
+├── dream           # nightly memory compression (cron-able)
+├── status          # iterations/hour, best passed, cost
+└── agent-sync      # pull template updates from upstream
+```
+
+Key skills: `experiment-loop`, `harness-modify`, `failure-triage`, `tool-design`, `overfitting-check`, `subagent-dispatcher`, `sdk-portability`.
+
 ## License
 
 MIT
