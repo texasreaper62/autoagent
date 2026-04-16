@@ -1,0 +1,19 @@
+# Windsurf rules — autoagent
+
+This repo uses a portable `.agent/` brain. Load at session start:
+
+- `.agent/AGENTS.md`
+- `.agent/memory/personal/PREFERENCES.md`
+- `.agent/memory/semantic/LESSONS.md`
+- `.agent/skills/_index.md` (skills load on demand)
+- `.agent/protocols/permissions.md` (before any tool call)
+
+Directive: see `program.md`.
+
+Key constraints:
+- Never edit below the FIXED ADAPTER BOUNDARY in agent.py/agent-claude.py.
+- Never change MODEL from gpt-5.
+- First run on any branch is always the unmodified baseline.
+- Every iteration runs in a fresh-context subagent.
+- Apply the overfitting-check skill before committing.
+- Both agent.py (OpenAI SDK) and agent-claude.py (Claude SDK) share this brain.

@@ -1,0 +1,27 @@
+---
+description: Portable .agent/ brain (autoagent)
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Agent brain
+
+This repo uses the portable `.agent/` brain. Read in order:
+
+1. `.agent/AGENTS.md` — the map.
+2. `.agent/memory/personal/PREFERENCES.md`
+3. `.agent/memory/semantic/LESSONS.md`
+4. `.agent/skills/_index.md` — skills load on demand.
+5. `.agent/protocols/permissions.md` — check before tool calls.
+
+## Task framing
+
+See `program.md` for the meta-agent directive.
+
+- Never edit below the `FIXED ADAPTER BOUNDARY` in `agent.py` or `agent-claude.py`.
+- Never change `MODEL` from `gpt-5` unless the human explicitly lifts the pin.
+- The first run on any branch is always the unmodified baseline.
+- Every benchmark iteration runs in a fresh-context subagent — see
+  `.agent/skills/subagent-dispatcher/SKILL.md`.
+- Both `agent.py` (OpenAI SDK) and `agent-claude.py` (Claude SDK) share this
+  brain; keep knowledge SDK-agnostic in skills + memory.
