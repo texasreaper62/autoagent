@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Baseline measurement snapshot for autoagent.
+# Prints iterations, best passed, last-run scores, and cost since branch start.
+set -euo pipefail
+
+TSV="${1:-results.tsv}"
+
+if [[ ! -f "$TSV" ]]; then
+  echo "no $TSV yet"
+  exit 0
+fi
+
+total=$(tail -n +2 "$TSV" | wc -l | tr -d ' ')
+kept=$(awk -F'\t' 'NR>1 && $6=="keep"' "$TSV" | wc -l | tr -d ' ')
+crashed=$(awk -F'\t' 'NR>1 && $6=="crash"' "$TSV" | wc -l | tr -d ' ')
+
+# passed is "n/total" — extract numerator, find max
+best_passed=$(awk -F'\t' 'NR>1 && $6!="crash" {split($3,a,"/"); print a[1]}' "$TSV" | sort -n | tail -1)
+total_pass=$(awk -F'\t' 'NR>1 {split($3,a,"/"); print a[2]; exit}' "$TSV")
+total_cost=$(awk -F'\t' 'NR>1 && $5 ~ /^[0-9]/ {sum+=$5} END {printf "%.2f",sum}' "$TSV")
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+branch_start=$(git log --reverse --format=%ct "$branch" 2>/dev/null | head -1)
+now=$(date +%s)
+if [[ -n "$branch_start" && "$total" -gt 0 ]]; then
+  hours=$(awk -v s="$branch_start" -v n="$now" 'BEGIN{printf "%.2f",(n-s)/3600}')
+  rate=$(awk -v t="$total" -v h="$hours" 'BEGIN{if(h>0)printf "%.1f",t/h; else print "n/a"}')
+else
+  hours="n/a"
+  rate="n/a"
+fi
+
+cat <<EOF
+branch:         $branch
+iterations:     $total (kept=$kept, crashed=$crashed)
+best_passed:    ${best_passed:-0}${total_pass:+/$total_pass}
+total_cost_usd: $total_cost
+hours_elapsed:  $hours
+iterations/h:   $rate
+EOF

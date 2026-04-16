@@ -1,0 +1,5 @@
+# File path patterns denied by pre_tool_call.sh
+# One pattern per line. Substring match against file_path.
+# Note: the FIXED ADAPTER BOUNDARY enforcement is best-effort here; the
+# boundary itself is enforced in agent.py/agent-claude.py by comments.
+results.tsv
